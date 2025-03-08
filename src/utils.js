@@ -13,9 +13,9 @@ function vsDecodeByte(char) {
 }
 
 //DO NOT ATTEMPT TO ENCODE MORE THAN 2^16 BYTES OF DATA AT ONCE
-function dataToVersionSelectors(arr) {
+function dataToVariationSelectors(arr) {
 	let retString = "";
-	for(i = 0; i < arr.length; i++) {
+	for(let i = 0; i < arr.length; i++) {
 		retString += vsEncodeByte(arr[i]);
 	}
 
@@ -31,7 +31,7 @@ function dataToVersionSelectors(arr) {
 	return retString;
 }
 
-function dataFromVersionSelectors(str) {
+function dataFromVariationSelectors(str) {
 	let dataOffset = 1;
 
 	let bigByte = vsDecodeByte(str.slice(dataOffset, dataOffset+2));
@@ -41,13 +41,11 @@ function dataFromVersionSelectors(str) {
 	let smallByte = vsDecodeByte(str.slice(dataOffset++, dataOffset+2))
 	if(smallByte > 15)
 		dataOffset++;
-	console.log(bigByte);
-	console.log(smallByte);
 
 	let dataWidth = (bigByte << 8) + smallByte;
-	console.log(dataWidth);
 
 	let retData = [];
+	let i = 0;
 	for(i = 0; retData.length < dataWidth; i++) {
 		let newData = vsDecodeByte(str.slice(dataOffset+i, dataOffset+i+2));
 		retData.push(newData);
@@ -55,10 +53,39 @@ function dataFromVersionSelectors(str) {
 			dataOffset++;
 	}
 
-	return retData;
+	return [retData, dataOffset+i];
+}
+
+function dataFromRawText(str) {
+	readMode = false
+	dataStrings = [];
+	for(let i = 0; i < str.length; i++) {
+		console.log(str.slice(i, i+2).codePointAt(0).toString(16));
+		if(str.slice(i, i+2).codePointAt(0) == 0xfe07) {
+			versionRet = dataFromVariationSelectors(str.slice(i));
+			dataStrings.push(versionRet[0]);
+			console.log("i=", versionRet[1]);
+			console.log("str.length=", str.length);
+			console.log("versionRet[1]=", versionRet[1]);
+			i += versionRet[1];
+		}
+	}
+
+	return dataStrings;
 }
 
 function appendData(text, data) {
-	dataStr = dataToVersionSelectors(data);
+	dataStr = dataToVariationSelectors(data);
 	return text + dataStr;
+}
+
+function meshData(text, data) {
+	if(text.length == 0)
+		return dataToVariationSelectors(data)
+	else if(text.length == 1)
+		return dataToVariationSelectors(data)
+
+	lastSafeIndex = text.length-1;
+
+	retText = text.split(0, text.len/2) + dataToVariationSelectors(data) + text.split(text.len/2, text.length-1);
 }
