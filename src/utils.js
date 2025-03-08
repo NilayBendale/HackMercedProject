@@ -26,7 +26,8 @@ function dataToVersionSelectors(arr) {
 
 	//add header (VS1, big-endian size, contents)
 	byteHeader = vsEncodeByte(bigByte) + vsEncodeByte(smallByte);
-	retString = String.fromCodePoint(0xfe00) + byteHeader + retString;
+	//variation select 8 (U+FE07) has no standardized use so should be safe for all languages
+	retString = String.fromCodePoint(0xfe07) + byteHeader + retString;
 	return retString;
 }
 
@@ -55,4 +56,9 @@ function dataFromVersionSelectors(str) {
 	}
 
 	return retData;
+}
+
+function appendData(text, data) {
+	dataStr = dataToVersionSelectors(data);
+	return text + dataStr;
 }
