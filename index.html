@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 	<head>
 		<meta charset="utf-8">
@@ -10,4 +10,111 @@
 		<script src="src/utils.js"></script>
 		<script src="src/wordSubstitution.js"></script>
 	</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Functional Test Page</title>
+    <style>
+        #hiddenOutput, #encodedOutput, #decodedEncodedText {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #f4f4f4;
+            padding: 10px;
+            display: block;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+        }
+        #hiddenOutput {
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+    <h1>A Short Title</h1>
+
+    <label>Original Text:</label>
+    <textarea id="inputText" rows="4" cols="50" placeholder="Enter text here..."></textarea>
+    <br><br>
+
+    <label>Data to Encode:</label>
+    <input type="text" id="encodeData" placeholder="Enter hidden message">
+    <br><br>
+
+    <button onclick="encodeText()">Encode</button>
+    <button onclick="decodeText()">Decode</button>
+
+    <p><strong>Encoded Text (With Hidden Data Embedded):</strong></p>
+    <p id="encodedOutput"></p> <!-- Now properly showing encoded text -->
+
+    <p><strong>Decoded Hidden Data:</strong></p>
+    <p id="outputText"></p>
+
+    <p><strong>Text With Encoded Data (After Decoding):</strong></p>
+    <p id="decodedEncodedText"></p>
+
+    <button onclick="toggleHiddenData()">Show Hidden Unicode Data</button>
+    <p id="hiddenOutput"></p>
+
+    <script src="src/utils.js"></script>
+    <script src="src/wordSubstitution.js"></script>
+    <script src="src/trackerData.js"></script>
+    <script src="src/varSelectorUtils.js"></script>
+
+    <script>
+        function encodeText() {
+            const inputText = document.getElementById("inputText").value;
+            const hiddenData = document.getElementById("encodeData").value;
+
+            if (typeof appendData === "function") {
+                // Convert hiddenData to Unicode codepoints array
+                const hiddenDataArray = [...hiddenData].map(char => char.charCodeAt(0));
+
+                // Encode the text using appendData
+                const encodedText = appendData(inputText, hiddenDataArray);
+
+                // Display the encoded text (user can see it)
+                document.getElementById("encodedOutput").innerText = encodedText;
+
+                // Generate hidden Unicode characters for debugging but keep it hidden initially
+                const hiddenChars = [...encodedText]
+                    .filter(char => char.codePointAt(0) >= 0xFE00)
+                    .map(char => `U+${char.codePointAt(0).toString(16).toUpperCase()}`)
+                    .join(" ");
+
+                document.getElementById("hiddenOutput").innerText = hiddenChars || "No hidden characters detected.";
+                document.getElementById("hiddenOutput").style.display = "none"; // Keep hidden initially
+            } else {
+                console.error("Encoding function not found.");
+                document.getElementById("outputText").innerText = "Encoding function not available.";
+            }
+        }
+
+        function decodeText() {
+            const encodedText = document.getElementById("encodedOutput").innerText;
+
+            if (typeof dataFromRawText === "function") {
+                // Extract the hidden data
+                const decodedDataArray = dataFromRawText(encodedText);
+                const decodedData = decodedDataArray.map(code => String.fromCharCode(...code)).join("");
+
+                // Show the decoded hidden data
+                document.getElementById("outputText").innerText = decodedData || "No hidden data found.";
+
+                // Show the encoded text after decoding (should look the same as before)
+                document.getElementById("decodedEncodedText").innerText = encodedText;
+            } else {
+                console.error("Decoding function not found.");
+                document.getElementById("outputText").innerText = "Decoding function not available.";
+            }
+        }
+
+        function toggleHiddenData() {
+            const hiddenOutput = document.getElementById("hiddenOutput");
+            hiddenOutput.style.display = (hiddenOutput.style.display === "none") ? "block" : "none";
+        }
+    </script>
+</body>
 </html>
