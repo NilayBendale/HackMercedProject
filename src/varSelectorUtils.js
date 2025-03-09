@@ -64,6 +64,9 @@ function dataFromRawText(str) {
 		if(str.slice(i, i+2).codePointAt(0) == 0xfe07) {
 			versionRet = dataFromVariationSelectors(str.slice(i));
 			dataStrings.push(versionRet[0]);
+			console.log("i=", versionRet[1]);
+			console.log("str.length=", str.length);
+			console.log("versionRet[1]=", versionRet[1]);
 			i += versionRet[1];
 		}
 	}
