@@ -11,29 +11,102 @@
 		<script src="src/wordSubstitution.js"></script>
 	</body>
 </html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Functional Test Page</title>
+    <title><title>GhostWrite</title>
+
     <style>
-        #hiddenOutput, #encodedOutput, #decodedEncodedText {
-            white-space: pre-wrap;
-            font-family: monospace;
-            background-color: #f4f4f4;
-            padding: 10px;
-            display: block;
-            margin-top: 10px;
-            border: 1px solid #ccc;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+        /* Background Styling */
+        body {
+            background-color: #0d0d0d;
+            color: #00ffcc;
+            font-family: 'Orbitron', sans-serif;
+            text-align: center;
+            padding: 20px;
         }
-        #hiddenOutput {
+
+        h1 {
+            font-size: 2rem;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px #00ffcc, 0 0 10px #00ffcc;
+        }
+
+        /* Textbox & Input Styles */
+        textarea, input {
+            background-color: #121212;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            padding: 10px;
+            width: 60%;
+            font-size: 1rem;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #00ffcc;
+            transition: all 0.3s ease-in-out;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            box-shadow: 0px 0px 20px #00ffcc;
+        }
+
+        /* Buttons */
+        button {
+            background-color: transparent;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0px 0px 10px #00ffcc;
+        }
+
+        button:hover {
+            background-color: #00ffcc;
+            color: #0d0d0d;
+            box-shadow: 0px 0px 20px #00ffcc;
+        }
+
+        /* Display Boxes */
+        #encodedOutput, #decodedEncodedText, #hiddenOutput {
+            background-color: #1a1a1a;
+            color: #00ffcc;
+            border: 2px solid #00ffcc;
+            padding: 10px;
+            width: 60%;
+            margin: 10px auto;
+            font-size: 1rem;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #00ffcc;
+            text-align: center;
+            white-space: pre-wrap;
             display: none; /* Initially hidden */
+        }
+
+        /* Circuit Board Background */
+        body::before {
+            content: "";
+            background: url('https://www.transparenttextures.com/patterns/circuit-board.png');
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            z-index: -1;
         }
     </style>
 </head>
 <body>
-    <h1>A Short Title</h1>
+    <h1>GhostWrite</h1>
 
     <label>Original Text:</label>
     <textarea id="inputText" rows="4" cols="50" placeholder="Enter text here..."></textarea>
@@ -47,7 +120,7 @@
     <button onclick="decodeText()">Decode</button>
 
     <p><strong>Encoded Text (With Hidden Data Embedded):</strong></p>
-    <p id="encodedOutput"></p> <!-- Now properly showing encoded text -->
+    <p id="encodedOutput"></p> 
 
     <p><strong>Decoded Hidden Data:</strong></p>
     <p id="outputText"></p>
@@ -69,23 +142,19 @@
             const hiddenData = document.getElementById("encodeData").value;
 
             if (typeof appendData === "function") {
-                // Convert hiddenData to Unicode codepoints array
                 const hiddenDataArray = [...hiddenData].map(char => char.charCodeAt(0));
-
-                // Encode the text using appendData
                 const encodedText = appendData(inputText, hiddenDataArray);
-
-                // Display the encoded text (user can see it)
+                
                 document.getElementById("encodedOutput").innerText = encodedText;
+                document.getElementById("encodedOutput").style.display = "block"; 
 
-                // Generate hidden Unicode characters for debugging but keep it hidden initially
                 const hiddenChars = [...encodedText]
                     .filter(char => char.codePointAt(0) >= 0xFE00)
                     .map(char => `U+${char.codePointAt(0).toString(16).toUpperCase()}`)
                     .join(" ");
 
                 document.getElementById("hiddenOutput").innerText = hiddenChars || "No hidden characters detected.";
-                document.getElementById("hiddenOutput").style.display = "none"; // Keep hidden initially
+                document.getElementById("hiddenOutput").style.display = "none";
             } else {
                 console.error("Encoding function not found.");
                 document.getElementById("outputText").innerText = "Encoding function not available.";
@@ -96,15 +165,12 @@
             const encodedText = document.getElementById("encodedOutput").innerText;
 
             if (typeof dataFromRawText === "function") {
-                // Extract the hidden data
                 const decodedDataArray = dataFromRawText(encodedText);
                 const decodedData = decodedDataArray.map(code => String.fromCharCode(...code)).join("");
 
-                // Show the decoded hidden data
                 document.getElementById("outputText").innerText = decodedData || "No hidden data found.";
-
-                // Show the encoded text after decoding (should look the same as before)
                 document.getElementById("decodedEncodedText").innerText = encodedText;
+                document.getElementById("decodedEncodedText").style.display = "block"; 
             } else {
                 console.error("Decoding function not found.");
                 document.getElementById("outputText").innerText = "Decoding function not available.";
